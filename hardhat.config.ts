@@ -4,7 +4,16 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.24",
+  solidity: {
+    version: "0.8.24",
+    settings: {
+      viaIR: true,
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
+  },
   networks: {
     coston2: {
       url: "https://coston2-api.flare.network/ext/C/rpc",

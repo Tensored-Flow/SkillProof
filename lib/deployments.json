@@ -1,0 +1,8 @@
+{
+  "localhost": {
+    "SkillProofRegistry": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+  },
+  "coston2": {
+    "SkillProofRegistry": "0xa855e8E15C9F350438065D19a73565ea1A23E33A"
+  }
+}
