@@ -15,7 +15,7 @@ const COSTON2_RPC = "https://coston2-api.flare.network/ext/C/rpc";
 
 // Minimal ABIs for the functions we need
 const ATTESTOR_ABI = [
-  "function getAttestation(address player) view returns (uint256 attestedAt, uint256 flareTimestamp, int256 anchorPrice, string pricePair, bool isAttested)",
+  "function getAttestation(address player) view returns (tuple(uint256 attestedAt, uint256 flareTimestamp, int256 anchorPrice, string pricePair, bool isAttested))",
   "function attestCredential(address player)",
 ];
 
