@@ -4,3 +4,5 @@ cache/
 artifacts/
 typechain-types/
 .DS_Store
+circuits/build/*.ptau
+circuits/build/*.wtns

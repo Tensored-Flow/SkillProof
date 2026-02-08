@@ -1,6 +1,6 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
-import { useState, createContext, useContext } from "react";
+import { useState, useCallback, createContext, useContext } from "react";
 import TopBar from "@/components/TopBar";
 import ResponsePanel from "@/components/ResponsePanel";
 import Toast, { ToastData } from "@/components/Toast";
@@ -24,13 +24,13 @@ export default function App({ Component, pageProps }: AppProps) {
   const [responseData, setResponseData] = useState<unknown>(null);
   const [toasts, setToasts] = useState<ToastData[]>([]);
 
-  const showToast = (toast: Omit<ToastData, "id">) => {
+  const showToast = useCallback((toast: Omit<ToastData, "id">) => {
     const id = Date.now().toString();
     setToasts((prev) => [...prev, { ...toast, id }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
     }, 4000);
-  };
+  }, []);
 
   return (
     <AppContext.Provider

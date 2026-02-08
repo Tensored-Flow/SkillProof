@@ -1,0 +1,250 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_registry",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "primary",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "linked",
+        "type": "address"
+      }
+    ],
+    "name": "AddressLinked",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "primary",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "unlinked",
+        "type": "address"
+      }
+    ],
+    "name": "AddressUnlinked",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "primary",
+        "type": "address"
+      }
+    ],
+    "name": "getAggregateScore",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "compositeElo",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "compositePercentile",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "totalMatches",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "issuerCount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "domainCount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "crossDomainBonus",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "overallScore",
+            "type": "uint256"
+          }
+        ],
+        "internalType": "struct SkillProofAggregator.AggregateScore",
+        "name": "",
+        "type": "tuple"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "primary",
+        "type": "address"
+      }
+    ],
+    "name": "getLinkedAddresses",
+    "outputs": [
+      {
+        "internalType": "address[]",
+        "name": "",
+        "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "primary",
+        "type": "address"
+      }
+    ],
+    "name": "getLinkedCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "primary",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "linked",
+        "type": "address"
+      }
+    ],
+    "name": "linkAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "linkedAddresses",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "primaryOf",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "registry",
+    "outputs": [
+      {
+        "internalType": "contract ISkillProofRegistryAgg",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "primary",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "linked",
+        "type": "address"
+      }
+    ],
+    "name": "unlinkAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

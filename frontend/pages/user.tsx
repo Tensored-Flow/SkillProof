@@ -82,10 +82,10 @@ export default function UserPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
+    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold mb-1">User Dashboard</h1>
-        <p className="text-xs text-muted">
+        <h1 className="text-3xl font-bold mb-1 tracking-wide">USER</h1>
+        <p className="text-xs text-muted font-body">
           View your credential and generate zero-knowledge proofs
           {demoMode && <span className="badge-pink ml-2">Demo</span>}
         </p>
@@ -115,7 +115,7 @@ export default function UserPage() {
         </div>
 
         {credential && (
-          <div className="border-2 border-accent p-4 space-y-3">
+          <div className="bg-elevated border-2 border-accent/50 p-4 space-y-3 shadow-[0_0_10px_rgba(0,255,136,0.1)]">
             <div className="flex items-center gap-2">
               <span className={credential.status === "issued" ? "badge-green" : "badge-pink"}>
                 {credential.status}
@@ -132,14 +132,14 @@ export default function UserPage() {
                 <span className="text-accent break-all">{credential.userAddress}</span>
               </div>
               {credential.score !== undefined && (
-                <div className="grid grid-cols-2 gap-4 mt-2 pt-2 border-t border-border">
-                  <div>
-                    <span className="text-muted">Score: </span>
-                    <span className="text-white text-lg font-bold">{credential.score}</span>
+                <div className="grid grid-cols-2 gap-4 mt-3 pt-3 border-t border-border">
+                  <div className="text-center">
+                    <span className="text-muted text-xs block mb-1">Score</span>
+                    <span className="stat-number-green">{credential.score}</span>
                   </div>
-                  <div>
-                    <span className="text-muted">Percentile: </span>
-                    <span className="text-white text-lg font-bold">{credential.percentile}th</span>
+                  <div className="text-center">
+                    <span className="text-muted text-xs block mb-1">Percentile</span>
+                    <span className="stat-number-amber">{credential.percentile}th</span>
                   </div>
                 </div>
               )}
@@ -153,9 +153,9 @@ export default function UserPage() {
       </section>
 
       {/* Section B: Generate ZK Proof */}
-      <section className="card space-y-4">
-        <h2 className="text-sm font-bold uppercase tracking-widest text-accent">
-          Generate Zero-Knowledge Proof
+      <section className="card space-y-4 border-t-4 border-t-pink">
+        <h2 className="text-sm font-bold uppercase tracking-widest text-pink">
+          Generate ZK Proof
         </h2>
 
         {!credential ? (
@@ -199,11 +199,10 @@ export default function UserPage() {
               <div className="space-y-4">
                 {/* Result badge */}
                 <div
-                  className={`border-2 p-6 text-center ${
-                    proofResult.result
+                  className={`border-2 p-6 text-center ${proofResult.result
                       ? "border-accent"
                       : "border-pink"
-                  }`}
+                    }`}
                 >
                   <div className={`text-4xl mb-2 ${proofResult.result ? "text-accent" : "text-pink"}`}>
                     {proofResult.result ? "\u2713" : "\u2717"}

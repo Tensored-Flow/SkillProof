@@ -13,6 +13,8 @@ export default function TopBar() {
     { href: "/issuer", label: "Issuer" },
     { href: "/user", label: "User" },
     { href: "/verify", label: "Verify" },
+    { href: "/hub", label: "\u26A1 Hub" },
+    { href: "/leaderboard", label: "\uD83C\uDFC6 Board" },
   ];
 
   async function connectWallet() {
@@ -56,9 +58,9 @@ export default function TopBar() {
   }
 
   return (
-    <header className="border-b-2 border-border bg-bg px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
+    <header className="border-t-2 border-t-accent border-b-2 border-b-border bg-bg px-6 py-3 flex items-center justify-between gap-4 flex-wrap">
       <div className="flex items-center gap-6">
-        <Link href="/" className="text-accent font-bold text-lg tracking-widest uppercase hover:text-white transition-colors">
+        <Link href="/" className="text-accent font-bold text-lg tracking-widest uppercase hover:text-white transition-all duration-200 hover:drop-shadow-[0_0_8px_rgba(0,255,136,0.5)]">
           SkillProof
         </Link>
         <nav className="flex gap-1">
@@ -66,11 +68,10 @@ export default function TopBar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`text-xs uppercase tracking-widest px-3 py-1.5 border-2 transition-colors ${
-                router.pathname === item.href
+              className={`text-xs uppercase tracking-widest px-3 py-1.5 border-2 transition-colors ${router.pathname === item.href
                   ? "border-accent text-accent"
                   : "border-transparent text-muted hover:text-white hover:border-border"
-              }`}
+                }`}
             >
               {item.label}
             </Link>
@@ -88,11 +89,10 @@ export default function TopBar() {
         {/* Demo mode toggle */}
         <button
           onClick={() => setDemoMode(!demoMode)}
-          className={`text-xs uppercase tracking-widest px-3 py-1.5 border-2 transition-colors ${
-            demoMode
+          className={`text-xs uppercase tracking-widest px-3 py-1.5 border-2 transition-colors ${demoMode
               ? "border-pink text-pink"
               : "border-accent text-accent"
-          }`}
+            }`}
         >
           {demoMode ? "Demo Mode" : "Live Mode"}
         </button>

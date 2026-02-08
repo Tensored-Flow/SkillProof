@@ -1,72 +1,676 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   PREMIUM BRUTALIST — Design System
+   Maximum restraint + Maximum intentionality
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Background hierarchy */
+  --bg-base: #0A0A0A;
+  --bg-surface: #111111;
+  --bg-elevated: #161616;
+
+  /* Border hierarchy — subtle to strong */
+  --border-subtle: #1A1A1A;
+  --border-visible: #2A2A2A;
+  --border-strong: #3A3A3A;
+  --border-accent: #444444;
+
+  /* Text hierarchy — NOT pure white */
+  --text-primary: #E0E0E0;
+  --text-secondary: #888888;
+  --text-muted: #555555;
+  --text-faint: #333333;
+
+  /* Accent colors — use SPARINGLY */
+  --accent: #00FF88;
+  --accent-pink: #FF0080;
+  --accent-amber: #F59E0B;
+  --accent-purple: #A855F7;
+  --accent-cyan: #06B6D4;
+
+  /* Subtle glows — much more restrained */
+  --glow-green: 0 0 8px rgba(0, 255, 136, 0.15);
+  --glow-pink: 0 0 8px rgba(255, 0, 128, 0.15);
+  --glow-amber: 0 0 8px rgba(245, 158, 11, 0.15);
+}
+
 * {
   box-sizing: border-box;
 }
 
-html, body {
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
   margin: 0;
   padding: 0;
-  background: #0a0a0a;
-  color: #ffffff;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
   font-family: 'JetBrains Mono', monospace;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* Focus — only on keyboard navigation */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Text selection — subtle */
 ::selection {
-  background: #00ff88;
-  color: #0a0a0a;
+  background: rgba(0, 255, 136, 0.2);
+  color: #fff;
 }
 
+/* Scrollbar — minimal */
 ::-webkit-scrollbar {
   width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0a0a0a;
-}
-::-webkit-scrollbar-thumb {
-  background: #333;
+  height: 6px;
 }
 
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ANIMATIONS — Snappy, minimal
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-soft {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes glow-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 5px rgba(0, 255, 136, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+  }
+}
+
+@keyframes bounce-subtle {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out forwards;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   INTERACTIVE ELEMENTS — Demo-ready hover effects
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.interactive {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.interactive:hover {
+  transform: translateY(-2px);
+}
+
+.interactive:active {
+  transform: translateY(0);
+}
+
+/* Hover lift with glow */
+.hover-lift {
+  transition: all 0.25s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Hover glow variants */
+.hover-glow-green:hover {
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+  border-color: var(--accent) !important;
+}
+
+.hover-glow-pink:hover {
+  box-shadow: 0 0 20px rgba(255, 0, 128, 0.3);
+  border-color: var(--accent-pink) !important;
+}
+
+.hover-glow-amber:hover {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+  border-color: var(--accent-amber) !important;
+}
+
+/* Scale on hover */
+.hover-scale {
+  transition: transform 0.2s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+/* Border highlight on hover */
+.hover-border {
+  transition: border-color 0.2s ease;
+}
+
+.hover-border:hover {
+  border-color: var(--accent) !important;
+}
+
+/* Stagger animation for lists */
+.stagger-animate>* {
+  opacity: 0;
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+.stagger-animate>*:nth-child(1) {
+  animation-delay: 0.05s;
+}
+
+.stagger-animate>*:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.stagger-animate>*:nth-child(3) {
+  animation-delay: 0.15s;
+}
+
+.stagger-animate>*:nth-child(4) {
+  animation-delay: 0.2s;
+}
+
+.stagger-animate>*:nth-child(5) {
+  animation-delay: 0.25s;
+}
+
+.stagger-animate>*:nth-child(6) {
+  animation-delay: 0.3s;
+}
+
+.stagger-animate>*:nth-child(7) {
+  animation-delay: 0.35s;
+}
+
+.stagger-animate>*:nth-child(8) {
+  animation-delay: 0.4s;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TYPOGRAPHY — Clear hierarchy
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Display font — headings */
+.font-display {
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.08em;
+}
+
+/* Body font — readable text */
+.font-body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* Terminal/data font */
+.text-terminal {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPONENT LAYER — Restrained, intentional
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 @layer components {
+  /* ──────────────────────────────────────────────────────────────────────────
+     BUTTONS — Primary = ONE per section max
+     ────────────────────────────────────────────────────────────────────────── */
+
   .btn-primary {
-    @apply bg-accent text-bg font-bold uppercase tracking-widest px-6 py-3 border-2 border-accent
-           hover:bg-transparent hover:text-accent transition-colors duration-150 text-sm;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 12px 24px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
+
+  .btn-primary:hover {
+    background: var(--accent);
+    color: var(--bg-base);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
   .btn-secondary {
-    @apply bg-transparent text-accent font-bold uppercase tracking-widest px-6 py-3 border-2 border-accent
-           hover:bg-accent hover:text-bg transition-colors duration-150 text-sm;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    border: 1px solid var(--border-visible);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
+
+  .btn-secondary:hover {
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+  }
+
+  .btn-secondary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
   .btn-pink {
-    @apply bg-pink text-white font-bold uppercase tracking-widest px-6 py-3 border-2 border-pink
-           hover:bg-transparent hover:text-pink transition-colors duration-150 text-sm;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 12px 24px;
+    border: 1px solid var(--accent-pink);
+    background: transparent;
+    color: var(--accent-pink);
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
+
+  .btn-pink:hover {
+    background: var(--accent-pink);
+    color: white;
+  }
+
   .btn-small {
-    @apply text-xs px-3 py-1.5;
+    font-size: 10px;
+    padding: 8px 14px;
   }
+
+  .btn-ghost {
+    border: none;
+    background: none;
+    color: var(--text-muted);
+    padding: 8px 12px;
+    cursor: pointer;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: color 0.2s ease;
+  }
+
+  .btn-ghost:hover {
+    color: var(--text-secondary);
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     INPUT FIELDS — Clean, minimal
+     ────────────────────────────────────────────────────────────────────────── */
+
   .input-field {
-    @apply w-full bg-bg border-2 border-border text-white font-mono text-sm px-4 py-3
-           focus:border-accent focus:outline-none placeholder:text-muted;
+    width: 100%;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    background: var(--bg-base);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    padding: 12px 16px;
+    transition: border-color 0.2s ease;
   }
+
+  .input-field:focus {
+    border-color: var(--accent);
+    outline: none;
+  }
+
+  .input-field::placeholder {
+    color: var(--text-faint);
+    font-weight: 300;
+  }
+
+  .input-field:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     CARDS — Subtle, not attention-grabbing
+     ────────────────────────────────────────────────────────────────────────── */
+
   .card {
-    @apply bg-surface border-2 border-border p-6;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    padding: 24px 28px;
+    transition: border-color 0.2s ease;
   }
+
+  .card:hover {
+    border-color: var(--border-visible);
+  }
+
+  .card-featured {
+    background: linear-gradient(180deg, #141414 0%, #111111 100%);
+    border-color: var(--border-visible);
+  }
+
+  .card-active {
+    border-left: 2px solid var(--accent);
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     LABELS — Small, quiet
+     ────────────────────────────────────────────────────────────────────────── */
+
   .label {
-    @apply text-xs uppercase tracking-widest text-muted mb-2 block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: block;
   }
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     BADGES — Subtle, outlined
+     ────────────────────────────────────────────────────────────────────────── */
+
   .badge {
-    @apply text-xs uppercase tracking-widest px-2 py-1 border inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border: 1px solid;
+    display: inline-block;
   }
+
   .badge-green {
-    @apply badge border-accent text-accent;
+    @apply badge;
+    border-color: var(--accent);
+    color: var(--accent);
   }
+
   .badge-pink {
-    @apply badge border-pink text-pink;
+    @apply badge;
+    border-color: var(--accent-pink);
+    color: var(--accent-pink);
   }
+
+  .badge-amber {
+    @apply badge;
+    border-color: var(--accent-amber);
+    color: var(--accent-amber);
+  }
+
+  .badge-cyan {
+    @apply badge;
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    background: rgba(6, 182, 212, 0.08);
+  }
+
   .badge-muted {
-    @apply badge border-muted text-muted;
+    @apply badge;
+    border-color: var(--border-visible);
+    color: var(--text-muted);
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     CODE & TERMINAL
+     ────────────────────────────────────────────────────────────────────────── */
+
+  .code-block {
+    background: var(--bg-base);
+    border: 1px solid var(--border-subtle);
+    padding: 16px 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    overflow: auto;
+  }
+
+  .terminal-box {
+    background: var(--bg-base);
+    border: 1px solid var(--border-subtle);
+    padding: 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     SECTION ACCENTS — Subtle left borders
+     ────────────────────────────────────────────────────────────────────────── */
+
+  .accent-bar-green {
+    border-left: 2px solid var(--accent);
+    padding-left: 16px;
+  }
+
+  .accent-bar-pink {
+    border-left: 2px solid var(--accent-pink);
+    padding-left: 16px;
+  }
+
+  .accent-bar-amber {
+    border-left: 2px solid var(--accent-amber);
+    padding-left: 16px;
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     STATS — Large, prominent numbers
+     ────────────────────────────────────────────────────────────────────────── */
+
+  .stat-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2.5rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .stat-number-green {
+    @apply stat-number;
+    color: var(--accent);
+  }
+
+  .stat-number-pink {
+    @apply stat-number;
+    color: var(--accent-pink);
+  }
+
+  .stat-number-amber {
+    @apply stat-number;
+    color: var(--accent-amber);
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     DIVIDERS
+     ────────────────────────────────────────────────────────────────────────── */
+
+  .divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 32px 0;
+  }
+
+  .divider-vertical {
+    color: var(--text-faint);
+    margin: 0 12px;
+  }
+
+  /* ──────────────────────────────────────────────────────────────────────────
+     SECTION HEADERS — With extending line
+     ────────────────────────────────────────────────────────────────────────── */
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .section-header::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-subtle);
+  }
+
+  .section-header h2,
+  .section-header span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
   }
 }

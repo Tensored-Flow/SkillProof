@@ -92,17 +92,17 @@ export default function IssuerPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
+    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold mb-1">Issuer Dashboard</h1>
-        <p className="text-xs text-muted">
+        <h1 className="text-3xl font-bold mb-1 tracking-wide">ISSUER</h1>
+        <p className="text-xs text-muted font-body">
           Mint, revoke, and look up soulbound credentials
           {demoMode && <span className="badge-pink ml-2">Demo</span>}
         </p>
       </div>
 
       {/* Section A: Issue Credential */}
-      <section className="card space-y-4">
+      <section className="card space-y-4 border-t-4 border-t-accent">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-bold uppercase tracking-widest text-accent">
             Issue Credential

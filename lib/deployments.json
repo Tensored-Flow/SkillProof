@@ -1,9 +1,23 @@
 {
   "localhost": {
-    "SkillProofRegistry": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+    "SkillProofRegistry": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    "SkillProofVerifier": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
   },
   "coston2": {
     "SkillProofRegistry": "0xa855e8E15C9F350438065D19a73565ea1A23E33A",
-    "SkillProofAttestor": "0xCf7C40Cf2734623db2AeC70dabD060E83b45bef4"
+    "SkillProofAttestor": "0xCf7C40Cf2734623db2AeC70dabD060E83b45bef4",
+    "SkillProofHub": "0x3eBaD0A13fDe9808938a4eD4f2fE5d92c8b29Cc3",
+    "SkillProofVerifier": "0xBEFded5454c7b3E16f1Db888e8280793735B866b",
+    "Groth16Verifier": "0xe5Ddc3EfFb0Aa08Eb3e5091128f12D7aB9E0A664",
+    "SkillProofZKVerifier": "0x0F46334167e68C489DE6B65D488F9d64624Bc270",
+    "SkillProofDecay": "0x20d0A539e0A49991876CDb2004FeA41AFE1C089E",
+    "SkillProofAggregator": "0x919473044Dde9b3eb69161C4a35eFfb995a234bB",
+    "SkillProofStaking": "0xc9c6837759c769CCA40661285e5633727A1EbDDD",
+    "SkillProofTreasury": "0xAd9BBc0294C8710FB96eA1d88b0D760C41074E01",
+    "SkillProofEngine": "0x936df2cfC13ed7970B5c028a3940e9aB45497376",
+    "MatchHistoryGroth16Verifier": "0x66904E1933F7d5f57Dc537C6e2F9d585e33bc8A6",
+    "SkillProofMatchVerifier": "0x417dbD1E6D4A35bb09bcC1E1b8DE64F8a2fC70a2",
+    "matchHistoryGroth16": "0x66904E1933F7d5f57Dc537C6e2F9d585e33bc8A6",
+    "matchHistoryVerifier": "0x417dbD1E6D4A35bb09bcC1E1b8DE64F8a2fC70a2"
   }
 }
