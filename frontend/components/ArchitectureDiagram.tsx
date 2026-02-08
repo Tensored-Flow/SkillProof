@@ -1,5 +1,5 @@
 // Architecture Diagram — Interactive SVG component
-// Shows the 9-contract SkillProof Protocol architecture with hover tooltips
+// Shows the 13-contract SkillProof Protocol architecture with hover tooltips
 
 import { useState } from "react";
 
@@ -269,7 +269,7 @@ export default function ArchitectureDiagram() {
 
                 {/* Protocol boundary box */}
                 <rect x="160" y="10" width="730" height="560" fill="none" stroke="#222222" strokeWidth="1" strokeDasharray="4,4" rx="4" />
-                <text x="175" y="30" fill="#666666" fontSize="10" fontWeight="bold">SKILLPROOF PROTOCOL (9 CONTRACTS)</text>
+                <text x="175" y="30" fill="#666666" fontSize="10" fontWeight="bold">SKILLPROOF PROTOCOL (13 CONTRACTS)</text>
 
                 {/* Hint text */}
                 <text x="480" y="30" fill="#444444" fontSize="9" textAnchor="middle" fontStyle="italic">

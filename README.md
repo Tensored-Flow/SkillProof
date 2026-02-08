@@ -1,20 +1,52 @@
 # SkillProof Protocol
 
-Verifiable on-chain skill credentials with ZK-SNARK proofs, temporal decay, economic security via issuer staking/slashing, cross-issuer aggregation, skill-gated DeFi, governance, prediction markets, and bounties. Built on Flare Network (Coston2 testnet) with multi-feed FTSO oracle integration.
+**Verifiable skill credentials for the internet — programmable competence gating, powered by Flare.**
 
-**13 smart contracts · 284 tests · 5 cryptographic layers · 6 frontend pages · 3 FTSO price feeds · SDK**
+[![Contracts](https://img.shields.io/badge/contracts-13%20deployed-00FF88)]() [![Tests](https://img.shields.io/badge/tests-284%20passing-00FF88)]() [![ZK Circuits](https://img.shields.io/badge/ZK%20circuits-2%20Groth16-A855F7)]() [![Crypto Primitives](https://img.shields.io/badge/crypto%20primitives-5-FF0080)]() [![Network](https://img.shields.io/badge/Flare-Coston2-F59E0B)]()
+
+[Live Frontend](https://tensored-flow.github.io/SkillProof) · [Coston2 Explorer](https://coston2-explorer.flare.network) · [GitHub](https://github.com/Tensored-Flow/SkillProof)
+
+---
+
+## The Problem
+
+Web3 has **$237B+ in TVL** with **zero competence gating**. Anyone can access any protocol regardless of skill — a first-day trader gets the same DeFi access as a 10-year veteran. The consequences are real:
+
+- **Cascading liquidations** from inexperienced users entering complex positions they don't understand
+- **Governance capture** where token-weighted voting lets whales override domain experts
+- **Sybil-vulnerable bounty systems** where anonymous submissions have no quality signal
+- **No portable skill reputation** — your track record on one platform is invisible to every other
+
+Skill verification today is siloed, self-reported, and non-portable. There is no on-chain primitive for competence.
+
+## The Solution
+
+SkillProof is an **on-chain protocol for issuing, verifying, and composing skill credentials**. Credentials are soulbound, oracle-attested, and ZK-verifiable. Any platform can issue credentials, any protocol can gate by skill.
+
+Four application modules demonstrate real use cases:
+
+| Module | What It Does |
+|--------|-------------|
+| **Vault** | Skill-gated DeFi — deposit freely, withdraw requires ELO >= 1500 |
+| **Govern** | Skill-weighted DAO — vote weight = skill percentile, not token holdings |
+| **Predict** | Commit-reveal prediction markets resolved by Flare FTSO oracles |
+| **Arena** | Anonymous bounties with commit-reveal solutions, credential-gated participation |
+
+The result: a **reputation flywheel** where protocol participation (winning predictions, completing bounties) feeds back into your on-chain skill score, which unlocks more protocol access.
+
+---
 
 ## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                     Frontend (Next.js · 6 pages)                    │
-│   Dashboard · Issuer · User · Hub · Verify · Leaderboard            │
+│   Home · Issuer · User · Hub · Verify · Leaderboard                  │
 └──────┬──────────┬──────────────┬───────────────┬────────────────────┘
        │          │              │               │
        │    ┌─────▼──────┐      │               │
        │    │  SDK        │     │               │
-       │    │  (sdk/)     │     │               │
+       │    │  (14 methods)│    │               │
        │    └─────┬──────┘      │               │
        │          │              │               │
 ┌──────▼──────┐ ┌─▼──────────┐ ┌▼───────────┐ ┌▼──────────────┐
@@ -29,11 +61,11 @@ Verifiable on-chain skill credentials with ZK-SNARK proofs, temporal decay, econ
 │   Security  │    │     │ Composer    │  │  Verifier   │
 └─────────────┘    │     └─────────────┘  └─────────────┘
                    │
-┌──────────────┐   │
-│    Decay     │   │
-│   Temporal   │   │
-│   Freshness  │   │
-└──────────────┘   │
+┌──────────────┐   │     ┌──────────────┐  ┌──────────────┐
+│    Decay     │   │     │ Match ZK     │  │  Match ZK    │
+│   Temporal   │   │     │ Groth16      │  │  Verifier    │
+│   Freshness  │   │     │ Verifier     │  │  Wrapper     │
+└──────────────┘   │     └──────────────┘  └──────────────┘
                    │
        ┌───────────▼──────────────┐
        │   Flare Coston2 Testnet  │
@@ -42,69 +74,203 @@ Verifiable on-chain skill credentials with ZK-SNARK proofs, temporal decay, econ
        └──────────────────────────┘
 ```
 
-## Contracts
+### Deployed Contracts (Coston2)
 
-**SkillProofRegistry** — The credential primitive. Issuers mint ELO-rated skill credentials for players. Every gated operation in the protocol reads from this contract.
+| Contract | Address | Role |
+|----------|---------|------|
+| SkillProofRegistry | [`0xa855e8E15C9F350438065D19a73565ea1A23E33A`](https://coston2-explorer.flare.network/address/0xa855e8E15C9F350438065D19a73565ea1A23E33A) | Soulbound credential storage |
+| SkillProofAttestor | [`0xCf7C40Cf2734623db2AeC70dabD060E83b45bef4`](https://coston2-explorer.flare.network/address/0xCf7C40Cf2734623db2AeC70dabD060E83b45bef4) | FTSO oracle attestation |
+| SkillProofHub | [`0x3eBaD0A13fDe9808938a4eD4f2fE5d92c8b29Cc3`](https://coston2-explorer.flare.network/address/0x3eBaD0A13fDe9808938a4eD4f2fE5d92c8b29Cc3) | Vault + Govern + Predict + Arena |
+| SkillProofVerifier | [`0xBEFded5454c7b3E16f1Db888e8280793735B866b`](https://coston2-explorer.flare.network/address/0xBEFded5454c7b3E16f1Db888e8280793735B866b) | Merkle proof verification |
+| Groth16Verifier | [`0xe5Ddc3EfFb0Aa08Eb3e5091128f12D7aB9E0A664`](https://coston2-explorer.flare.network/address/0xe5Ddc3EfFb0Aa08Eb3e5091128f12D7aB9E0A664) | ZK-SNARK on-chain verifier |
+| SkillProofZKVerifier | [`0x0F46334167e68C489DE6B65D488F9d64624Bc270`](https://coston2-explorer.flare.network/address/0x0F46334167e68C489DE6B65D488F9d64624Bc270) | ZK threshold proof wrapper |
+| SkillProofDecay | [`0x20d0A539e0A49991876CDb2004FeA41AFE1C089E`](https://coston2-explorer.flare.network/address/0x20d0A539e0A49991876CDb2004FeA41AFE1C089E) | Temporal credential freshness |
+| SkillProofAggregator | [`0x919473044Dde9b3eb69161C4a35eFfb995a234bB`](https://coston2-explorer.flare.network/address/0x919473044Dde9b3eb69161C4a35eFfb995a234bB) | Multi-issuer credential composer |
+| SkillProofStaking | [`0xc9c6837759c769CCA40661285e5633727A1EbDDD`](https://coston2-explorer.flare.network/address/0xc9c6837759c769CCA40661285e5633727A1EbDDD) | Issuer staking + slashing |
+| SkillProofTreasury | [`0xAd9BBc0294C8710FB96eA1d88b0D760C41074E01`](https://coston2-explorer.flare.network/address/0xAd9BBc0294C8710FB96eA1d88b0D760C41074E01) | Protocol fee collection |
+| SkillProofEngine | [`0x936df2cfC13ed7970B5c028a3940e9aB45497376`](https://coston2-explorer.flare.network/address/0x936df2cfC13ed7970B5c028a3940e9aB45497376) | On-chain ELO rating engine |
+| MatchHistoryGroth16Verifier | [`0x66904E1933F7d5f57Dc537C6e2F9d585e33bc8A6`](https://coston2-explorer.flare.network/address/0x66904E1933F7d5f57Dc537C6e2F9d585e33bc8A6) | Match history ZK verifier |
+| SkillProofMatchVerifier | [`0x417dbD1E6D4A35bb09bcC1E1b8DE64F8a2fC70a2`](https://coston2-explorer.flare.network/address/0x417dbD1E6D4A35bb09bcC1E1b8DE64F8a2fC70a2) | Match history proof wrapper |
 
-**SkillProofAttestor** — Anchors credentials to Flare FTSO oracle state, creating a verifiable timestamp proof that a credential existed at a known price feed moment.
+---
 
-**SkillProofHub** — Four composable modules that gate access using Registry credentials:
+## Cryptographic Primitives
 
-| Module | Description |
-|--------|-------------|
-| **Vault** | Skill-gated DeFi — anyone deposits C2FLR, only players with ELO >= threshold can withdraw |
-| **Govern** | Skill-weighted DAO — vote weight equals your credential percentile (96th percentile = 96 weight) |
-| **Predict** | Expert prediction markets with commit-reveal + Flare FTSO oracle resolution (FLR/USD, BTC/USD, ETH/USD) |
-| **Arena** | Anonymous skill bounties with commit-reveal solutions and C2FLR rewards |
+SkillProof implements **5 distinct cryptographic layers** that compose into a full privacy-preserving skill verification stack.
 
-**SkillProofVerifier** — Privacy-preserving credential verification via Merkle proofs:
+### 1. ZK-SNARK Threshold Proofs (Groth16)
 
-| Feature | Description |
-|---------|-------------|
-| **Credential Proofs** | Prove a credential exists in the Merkle tree without revealing all data on-chain |
-| **Threshold Proofs** | Prove "my ELO >= X" without revealing exact ELO — privacy-preserving skill gates |
-| **Replay Prevention** | Each proof can only be recorded once via `usedProofs` mapping |
-| **On-chain Tree Build** | Operator builds Merkle root directly from Registry state — no off-chain trust |
+**Circuit:** `circuits/threshold_proof.circom` — **36 constraints**
 
-**Groth16Verifier** — Auto-generated Solidity verifier for the circom2 ZK-SNARK circuit. Verifies Groth16 proofs on-chain in a single transaction.
+Proves "my ELO >= threshold" without revealing the exact ELO. The circuit uses:
 
-**SkillProofZKVerifier** — Wraps the Groth16Verifier to verify threshold proofs ("my ELO >= X") using zero-knowledge SNARKs. The circom2 circuit uses a commitment scheme (ELO + salt * 2^32) — the prover demonstrates knowledge of a valid ELO without revealing it.
+- **Bit-decomposition range check**: 32-bit decomposition of `(elo - threshold)` with constraint `bits[i] * (1 - bits[i]) === 0` per bit, ensuring the difference is non-negative
+- **Commitment scheme**: `commitment = elo + salt * 2^32` — the salt blinds the ELO value so the commitment reveals nothing about the underlying score
+- **Public signals**: `[valid, threshold, credentialCommitment]` — the verifier sees only the threshold claimed and the commitment, never the ELO
 
-**SkillProofDecay** — Time-weighted credential freshness. Credentials lose 1% value per day if not refreshed by the issuer, flooring at 50%. Incentivizes issuers to keep credentials current.
+The full trusted setup ceremony was performed: powers of tau (pot12) + circuit-specific phase 2 contribution. The on-chain Groth16 verifier was auto-generated by `snarkjs zkey export solidityverifier`.
 
-**SkillProofAggregator** — Multi-issuer credential composer. Links multiple credential addresses to one primary identity, computes weighted-average ELO across issuers, and awards a cross-domain bonus (+50 per additional issuer).
+```
+User: "I have ELO >= 1500"
+Circuit: Checks (elo - 1500) is non-negative via bit decomposition
+         Verifies commitment = elo + salt * 2^32
+Output:  [1, 1500, commitment] — valid proof, no ELO leaked
+```
 
-**SkillProofStaking** — Economic security layer. Issuers stake native tokens to register, creating skin-in-the-game. Fraudulent issuers get slashed (50% penalty). Features 7-day lock period, increaseStake for recovery, and permanent slash count record.
+### 2. ZK-SNARK Match History Proofs (Groth16)
 
-**SkillProofTreasury** — Protocol fee collection and revenue analytics. Collects minting, market creation, and verification fees with per-issuer revenue tracking, bounty commissions, and periodic snapshots.
+**Circuit:** `circuits/match_history_proof.circom` — **176 constraints** (~5x more complex)
 
-**SkillProofEngine** — On-chain ELO rating engine with fixed-point math. Records matches, computes ELO changes with dynamic K-factors (32/24/16), tracks win streaks, peak ratings, and domain-specific ELOs.
+Proves "I played >= X matches AND my win rate >= Y%" without revealing match count, wins, losses, or opponents.
 
-**MatchHistoryGroth16Verifier** — Auto-generated Solidity verifier for the match history circom2 ZK-SNARK circuit (176 constraints). Verifies Groth16 proofs of match history properties on-chain.
+- **Ratio proof without division**: `wins * 10000 >= minWinRateBps * totalMatches` — avoids field division entirely by comparing cross-multiplied products
+- **Commitment**: `totalMatches + wins * 2^16 + salt * 2^32`
+- **Public signals**: `[minMatches, minWinRateBps, commitment]`
+- **Separate trusted setup ceremony** (reuses pot12, fits within 4096 constraint limit)
 
-**SkillProofMatchVerifier** — ZK match history verification wrapper. Proves "I played >= X matches AND my win rate >= Y%" without revealing exact record, opponents, or match details. Uses an algebraic ratio proof technique (wins * 10000 >= minWinRateBps * totalMatches) to verify percentages in zero knowledge without division.
+This circuit enables privacy-preserving competitive matchmaking — a player can prove they're experienced with a strong win rate without revealing their exact record or who they played.
 
-## Deployed Contracts (Coston2)
+### 3. Commit-Reveal Schemes
 
-| Contract | Address |
-|----------|---------|
-| SkillProofRegistry | `0xa855e8E15C9F350438065D19a73565ea1A23E33A` |
-| SkillProofAttestor | `0xCf7C40Cf2734623db2AeC70dabD060E83b45bef4` |
-| SkillProofHub | `0x3eBaD0A13fDe9808938a4eD4f2fE5d92c8b29Cc3` |
-| SkillProofVerifier | `0xBEFded5454c7b3E16f1Db888e8280793735B866b` |
-| Groth16Verifier | `0xe5Ddc3EfFb0Aa08Eb3e5091128f12D7aB9E0A664` |
-| SkillProofZKVerifier | `0x0F46334167e68C489DE6B65D488F9d64624Bc270` |
-| SkillProofDecay | `0x20d0A539e0A49991876CDb2004FeA41AFE1C089E` |
-| SkillProofAggregator | `0x919473044Dde9b3eb69161C4a35eFfb995a234bB` |
-| SkillProofStaking | `0xc9c6837759c769CCA40661285e5633727A1EbDDD` |
-| SkillProofTreasury | `0xAd9BBc0294C8710FB96eA1d88b0D760C41074E01` |
-| SkillProofEngine | `0x936df2cfC13ed7970B5c028a3940e9aB45497376` |
-| MatchHistoryGroth16Verifier | `0x66904E1933F7d5f57Dc537C6e2F9d585e33bc8A6` |
-| SkillProofMatchVerifier | `0x417dbD1E6D4A35bb09bcC1E1b8DE64F8a2fC70a2` |
+Used across two Hub modules to prevent front-running and ensure fairness:
+
+- **Prediction Markets**: Users commit `keccak256(prediction || salt)` during the commit phase, then reveal `(prediction, salt)` after the deadline. The contract verifies the hash matches. Nobody can copy your prediction before the deadline.
+- **Bounty Solutions**: Same pattern — commit a solution hash, reveal after evaluation period. Prevents solution plagiarism and enables anonymous skill assessment.
+
+Both provide **computational hiding** (can't determine the value from the hash) and **computational binding** (can't change your committed value after the fact).
+
+### 4. Merkle Proof Verification
+
+The Verifier contract builds a Merkle tree from Registry credential data and supports two proof types:
+
+- **Credential inclusion proofs**: Prove a credential exists in the tree without revealing all credential fields on-chain
+- **Threshold proofs**: Prove "my ELO >= X" using a Merkle tree built with threshold flags — the tree encodes boolean `meetsThreshold` per user, and the proof reveals only that flag
+- **Replay prevention**: Each proof hash is tracked on-chain via `usedProofs` mapping to prevent double-use
+- **On-chain tree construction**: The operator builds the Merkle root directly from Registry state via `updateMerkleRootFromRegistry()` — no off-chain trust assumption
+
+### 5. Economic Cryptography (Staking/Slashing)
+
+Creates an economic security layer on top of cryptographic security:
+
+- **Issuer staking**: Credential issuers must stake native tokens to register, creating skin-in-the-game. Minimum stake enforced on-chain.
+- **Slashing**: Fraudulent issuers get slashed (50% penalty). The `slashIssuer()` function is callable by the owner when fraud is proven.
+- **7-day lock period**: Prevents flash-stake attacks where issuers stake momentarily to issue credentials then immediately withdraw
+- **Recovery mechanism**: `increaseStake()` allows slashed issuers to rebuild their stake and resume operations
+- **Permanent record**: Slash count is tracked on-chain and never resets — reputation damage is permanent
+
+This creates a game-theoretic incentive: issuing fraudulent credentials is economically irrational because the expected slashing penalty exceeds any gain from fake credentials.
+
+---
+
+## Flare Integration
+
+SkillProof uses **Flare's enshrined data protocols** — not third-party oracle services — making our oracle security equivalent to the network's own security.
+
+### FTSO (Flare Time Series Oracle) — Two Distinct Use Cases
+
+#### Use Case 1: Credential Attestation
+
+**Contract:** `SkillProofAttestor.sol`
+
+The Attestor reads the FTSO FLR/USD price feed to timestamp and attest credentials with oracle-verified market data. This creates a **provable link** between when a credential was issued and the state of the market at that moment.
+
+```solidity
+import {TestFtsoV2Interface} from
+    "@flarenetwork/flare-periphery-contracts/coston2/TestFtsoV2Interface.sol";
+import {ContractRegistry} from
+    "@flarenetwork/flare-periphery-contracts/coston2/ContractRegistry.sol";
+
+// Dynamic resolution — never hardcode oracle addresses
+TestFtsoV2Interface ftsoV2 = ContractRegistry.getTestFtsoV2();
+(uint256 feedValue, int8 decimals, uint64 timestamp) =
+    ftsoV2.getFeedById(FLR_USD_FEED_ID);
+```
+
+#### Use Case 2: Prediction Market Resolution
+
+**Contract:** `SkillProofHub.sol` (Predict module)
+
+The Predict module creates markets anchored to FTSO feed IDs. Markets resolve by reading live FTSO prices on-chain — **fully trustless, no manual resolution, no dispute process**.
+
+```solidity
+// Market stores which feed to resolve against
+struct Market {
+    bytes21 feedId;      // e.g., FLR/USD, BTC/USD, ETH/USD
+    int256 targetPrice;  // "Will FLR exceed $1.00?"
+    int256 actualPrice;  // Filled on resolution from FTSO
+    // ...
+}
+
+// Resolution reads live oracle price
+function resolveMarket(uint256 marketId) external {
+    TestFtsoV2Interface ftsoV2 = ContractRegistry.getTestFtsoV2();
+    (uint256 feedValue, int8 decimals,) = ftsoV2.getFeedById(m.feedId);
+    m.actualPrice = int256(feedValue);
+    m.resolved = true;
+}
+```
+
+### Feed IDs Used
+
+| Feed | ID | Contract | Usage |
+|------|-----|----------|-------|
+| FLR/USD | `0x01464c522f55534400000000000000000000000000` | Attestor + Hub | Credential attestation + prediction market |
+| BTC/USD | `0x014254432f55534400000000000000000000000000` | Hub | Prediction market: "Will BTC exceed $100,000?" |
+| ETH/USD | `0x014554482f55534400000000000000000000000000` | Hub | Prediction market: "Will ETH exceed $4,000?" |
+
+### Why Flare (Not Chainlink, Not UMA)
+
+- **Enshrined oracle**: FTSO is secured by the full economic weight of the Flare network, not a third-party service that can be bribed or shut down independently
+- **Free view calls**: No per-query fees on Coston2 — we can read prices in every transaction without cost overhead
+- **ContractRegistry pattern**: `ContractRegistry.getTestFtsoV2()` dynamically resolves to the latest oracle address, so our contracts never hardcode addresses that could become stale
+- **90-second update cadence** with block-latency fast updates — fresh enough for prediction market resolution without the staleness risk of slower oracles
+
+---
+
+## Flare Bonus: External Data Source Innovation
+
+SkillProof brings **external real-world competence data on-chain** as a new category of oracle-attested information.
+
+Skill platforms — trading competitions (FinCraft Arena, Loaf Markets), competitive programming (LeetCode), chess platforms (chess.com), and esports — generate massive amounts of competence data. Today, this data lives in **siloed databases** with no portability and no composability.
+
+SkillProof creates a bridge:
+
+1. **Skill platforms issue soulbound credentials** with ELO ratings, percentiles, match histories, and domain tags
+2. **Flare's FTSO attestation layer timestamps each credential** against real market data, creating a cryptographic proof that the credential existed at a specific oracle moment
+3. **ZK circuits enable privacy-preserving verification** — prove you're skilled without revealing your exact stats
+4. **The prediction market module creates a feedback loop**: on-chain FTSO data resolves markets that are themselves skill-gated by external competence credentials
+
+This is a novel data category for Flare's ecosystem: **human competence as an on-chain primitive**, attested by enshrined oracles and verified by zero-knowledge proofs.
+
+---
+
+## Building on Flare — Developer Experience
+
+### What Worked Well
+
+- **ContractRegistry pattern is elegant.** Dynamic resolution via `ContractRegistry.getTestFtsoV2()` means we never hardcode oracle addresses. When Flare upgrades their oracle implementation, our contracts automatically resolve to the new version. This is better than Chainlink's static address model.
+- **flare-periphery-contracts package is clean.** `npm install @flarenetwork/flare-periphery-contracts` gives you typed Solidity interfaces that import cleanly. The `TestFtsoV2Interface` has a simple, well-designed API surface.
+- **Coston2 testnet was stable.** Zero downtime during the hackathon. Blocks mined consistently, transactions confirmed within seconds.
+- **Free FTSO view calls.** Being able to read price feeds in any transaction without worrying about per-query costs made rapid iteration painless. We could test prediction market resolution dozens of times without any cost overhead.
+- **Faucet reliability.** The Coston2 faucet worked every time we needed test tokens.
+
+### What Was Challenging
+
+- **TestFtsoV2Interface vs production interfaces.** Initial confusion about which interface to import for Coston2 — the documentation could be clearer about `TestFtsoV2Interface` being the correct import for testnet and what the equivalent is for mainnet.
+- **Feed ID format.** Finding the correct `bytes21` feed ID format required digging through example code rather than finding a clear reference table. A "Feed ID Cheat Sheet" in the quickstart guide would save every hackathon team 30 minutes.
+- **Notion hackathon guide rendering.** The hackathon documentation on Notion didn't render well without JavaScript, making it hard to search and reference during development.
+
+### What We'd Love to See
+
+- **"Flare for Hackathons" quickstart**: A single page with copy-paste Hardhat config, a feed ID table for all supported assets, and a minimal working FTSO consumer contract (10 lines of Solidity that reads a price).
+- **FDC documentation**: More concrete examples for Web2 data attestation use cases — especially for bringing off-chain API data on-chain, which is directly relevant to skill credential issuance.
+- **Feed ID explorer**: A simple web tool where you can browse available feeds and copy their `bytes21` IDs.
+
+---
 
 ## SDK
 
-The `sdk/` directory provides a developer-friendly TypeScript SDK for integrating SkillProof into any protocol.
+The `sdk/` directory provides a TypeScript SDK with **14 methods** for integrating SkillProof into any protocol:
 
 ```typescript
 import { SkillProof } from "@skillproof/sdk";
@@ -124,7 +290,31 @@ if (result.passed) {
 }
 ```
 
-See [sdk/README.md](sdk/README.md) for full API reference, use cases (skill-gated DeFi, weighted governance, ZK verification queries), and runnable examples.
+**Available methods:** `getCredential`, `hasCredential`, `getEffectiveElo`, `getDecayedElo`, `getReputationBonus`, `getDecayMultiplier`, `getEffectiveVotingPower`, `checkGate`, `getAggregateScore`, `getLinkedAddresses`, `isZKVerified`, `getVerifiedThreshold`, `getLeaderboard`, `getProtocolStats`
+
+See [sdk/README.md](sdk/README.md) for full API reference and runnable examples.
+
+---
+
+## Hub Modules
+
+### Vault — Skill-Gated DeFi
+
+Anyone can deposit C2FLR. Only players with **ELO >= 1500** can withdraw. This creates a skill-verified DeFi primitive — the vault's withdrawal gate reads directly from the Registry contract.
+
+### Govern — Skill-Weighted DAO
+
+Proposals are voted on with weight equal to the voter's **skill percentile** plus their reputation bonus. A 95th percentile player's vote carries ~19x the weight of a 5th percentile player. This is governance by demonstrated competence, not by capital.
+
+### Predict — Oracle-Resolved Markets
+
+Commit-reveal prediction markets anchored to **Flare FTSO feeds**. Three seeded markets: FLR/USD, BTC/USD, ETH/USD. Markets resolve by reading live oracle prices — no manual resolution, no dispute process. Correct predictions earn **+10 reputation** in the flywheel.
+
+### Arena — Anonymous Bounties
+
+Skill challenges with C2FLR rewards escrowed on-chain. Solutions use commit-reveal to prevent plagiarism. The poster awards the bounty to the best solution. Winning earns **+15 reputation**.
+
+---
 
 ## Tests
 
@@ -132,178 +322,156 @@ See [sdk/README.md](sdk/README.md) for full API reference, use cases (skill-gate
 
 | Test File | Count |
 |-----------|-------|
-| SkillProofAggregator.test.ts | 16 |
-| SkillProofDecay.test.ts | 26 |
-| SkillProofEngine.test.ts | 32 |
-| SkillProofHub.test.ts | 56 passing, 1 pending |
-| SkillProofMatchVerifier.test.ts | 19 |
 | SkillProofRegistry.test.ts | 30 |
+| SkillProofHub.test.ts | 57 passing, 1 pending |
+| SkillProofVerifier.test.ts | 36 |
+| SkillProofZKVerifier.test.ts | 15 |
+| SkillProofDecay.test.ts | 28 |
+| SkillProofAggregator.test.ts | 16 |
 | SkillProofStaking.test.ts | 28 |
 | SkillProofTreasury.test.ts | 23 |
-| SkillProofVerifier.test.ts | 36 |
-| SkillProofZKVerifier.test.ts | 18 |
+| SkillProofEngine.test.ts | 32 |
+| SkillProofMatchVerifier.test.ts | 19 |
+
+ZK tests use **real Groth16 proofs** generated from the actual circom2 circuits — not mocked verifiers.
+
+---
+
+## Getting Started
+
+```bash
+# Prerequisites: Node.js >= 18, npm
+git clone https://github.com/Tensored-Flow/SkillProof.git
+cd SkillProof
+npm install
+cp .env.example .env  # Add your PRIVATE_KEY
+
+# Compile contracts
+npx hardhat compile
+
+# Run tests
+npx hardhat test
+```
+
+### Deploy to Coston2
+
+```bash
+# Core protocol
+npx hardhat run scripts/deploy.ts --network coston2
+npx hardhat run scripts/seed.ts --network coston2
+npx hardhat run scripts/deploy-attestor.ts --network coston2
+npx hardhat run scripts/deploy-hub.ts --network coston2
+npx hardhat run scripts/seed-hub.ts --network coston2
+
+# Verification layer
+npx hardhat run scripts/deploy-verifier.ts --network coston2
+npx hardhat run scripts/deploy-zk-verifier.ts --network coston2
+
+# Extensions
+npx hardhat run scripts/deploy-decay.ts --network coston2
+npx hardhat run scripts/deploy-aggregator.ts --network coston2
+npx hardhat run scripts/deploy-staking.ts --network coston2
+npx hardhat run scripts/deploy-treasury.ts --network coston2
+npx hardhat run scripts/deploy-engine.ts --network coston2
+npx hardhat run scripts/deploy-match-verifier.ts --network coston2
+
+# Seed multi-issuer and multi-feed data
+npx hardhat run scripts/seed-multi-issuer.ts --network coston2
+npx hardhat run scripts/seed-multi-feed.ts --network coston2
+```
+
+### Generate ZK Proofs
+
+```bash
+# Threshold proof (ELO >= 1500)
+ELO=1847 THRESHOLD=1500 SALT=12345 npx hardhat run scripts/generate-zk-proof.ts
+
+# Submit to Coston2
+ELO=1847 THRESHOLD=1500 SALT=12345 SUBMIT=true \
+  npx hardhat run scripts/generate-zk-proof.ts --network coston2
+
+# Match history proof (>= 10 matches, >= 60% win rate)
+TOTAL_MATCHES=12 WINS=8 MIN_MATCHES=10 MIN_WIN_RATE=6000 SALT=54321 \
+  npx hardhat run scripts/generate-match-proof.ts
+
+# Submit to Coston2
+TOTAL_MATCHES=12 WINS=8 MIN_MATCHES=10 MIN_WIN_RATE=6000 SALT=54321 SUBMIT=true \
+  npx hardhat run scripts/generate-match-proof.ts --network coston2
+```
+
+---
 
 ## Project Structure
 
 ```
 contracts/
-  SkillProofRegistry.sol   — Credential registry (ELO, percentiles, skill domains)
-  SkillProofAttestor.sol   — FTSO oracle attestation layer
-  SkillProofHub.sol        — Hub: Vault + Govern + Predict + Arena modules
-  SkillProofVerifier.sol   — Merkle proof verification + threshold proofs
-  Groth16Verifier.sol      — Auto-generated Groth16 SNARK verifier
-  SkillProofZKVerifier.sol — ZK-SNARK threshold proof wrapper
-  SkillProofDecay.sol      — Time-weighted credential decay
-  SkillProofAggregator.sol — Multi-issuer credential aggregation
-  SkillProofStaking.sol    — Issuer staking + slashing economic security
-  SkillProofTreasury.sol   — Protocol fee collection + revenue analytics
-  SkillProofEngine.sol     — On-chain ELO rating engine with K-factors
-  MatchHistoryVerifier.sol — Auto-generated Groth16 verifier (match history circuit)
-  SkillProofMatchVerifier.sol — ZK match history proof wrapper
+  SkillProofRegistry.sol        — Soulbound credential storage (ELO, percentiles, domains)
+  SkillProofAttestor.sol        — FTSO oracle attestation layer
+  SkillProofHub.sol             — Vault + Govern + Predict + Arena modules
+  SkillProofVerifier.sol        — Merkle proof verification + threshold proofs
+  Groth16Verifier.sol           — Auto-generated Groth16 SNARK verifier
+  SkillProofZKVerifier.sol      — ZK-SNARK threshold proof wrapper
+  SkillProofDecay.sol           — Time-weighted credential decay
+  SkillProofAggregator.sol      — Multi-issuer credential aggregation
+  SkillProofStaking.sol         — Issuer staking + slashing
+  SkillProofTreasury.sol        — Protocol fee collection + revenue analytics
+  SkillProofEngine.sol          — On-chain ELO engine with K-factors (32/24/16)
+  MatchHistoryVerifier.sol      — Auto-generated Groth16 verifier (match history)
+  SkillProofMatchVerifier.sol   — ZK match history proof wrapper
 circuits/
-  threshold_proof.circom   — circom2 circuit: proves ELO >= threshold (36 constraints)
-  match_history_proof.circom — circom2 circuit: proves match count + win rate (176 constraints)
-  build/                   — Compiled WASM, zkey, verification keys
+  threshold_proof.circom        — Proves ELO >= threshold (36 constraints)
+  match_history_proof.circom    — Proves match count + win rate (176 constraints)
+  build/                        — Compiled WASM, zkey, verification keys
 sdk/
-  index.ts                 — SDK entry point (SkillProof class)
-  README.md                — SDK documentation + API reference
-  examples/
-    gate-example.ts        — Runnable demo against live Coston2 contracts
+  index.ts                      — SkillProof class (14 methods)
+  README.md                     — API reference + examples
+  examples/gate-example.ts      — Runnable demo against live Coston2
 scripts/
-  deploy.ts                — Deploy Registry
-  deploy-attestor.ts       — Deploy Attestor
-  deploy-hub.ts            — Deploy Hub
-  deploy-verifier.ts       — Deploy Verifier + set Merkle root from Registry
-  deploy-zk-verifier.ts    — Deploy Groth16Verifier + ZKVerifier
-  deploy-decay.ts          — Deploy Decay
-  deploy-aggregator.ts     — Deploy Aggregator
-  deploy-staking.ts        — Deploy Staking + auto-stake issuers
-  deploy-treasury.ts       — Deploy Treasury
-  deploy-engine.ts         — Deploy Engine
-  deploy-match-verifier.ts — Deploy MatchHistoryGroth16Verifier + MatchVerifier
-  generate-zk-proof.ts     — Generate Groth16 threshold proofs
-  generate-match-proof.ts  — Generate Groth16 match history proofs
-  seed.ts                  — Seed credentials
-  seed-hub.ts              — Seed all 4 Hub modules with demo data
-  seed-multi-feed.ts       — Seed BTC/USD + ETH/USD prediction markets
-  seed-multi-issuer.ts     — Seed multi-issuer credentials for aggregation
-  attest.ts                — Run FTSO attestations
-test/                      — 284 tests (10 test files)
+  deploy*.ts                    — Deploy scripts (11 contracts)
+  seed*.ts                      — Seed data scripts
+  generate-zk-proof.ts          — Threshold proof generation
+  generate-match-proof.ts       — Match history proof generation
+  attest.ts                     — FTSO attestation runner
+test/                           — 284 tests across 10 files
 lib/
-  deployments.json         — Contract addresses per network
-  abi.json                 — Registry ABI
-  attestor-abi.json        — Attestor ABI
-  hub-abi.json             — Hub ABI
-  verifier-abi.json        — Verifier ABI
-  zk-verifier-abi.json     — Groth16Verifier ABI
-  zk-wrapper-abi.json      — ZKVerifier wrapper ABI
-  decay-abi.json           — Decay ABI
-  aggregator-abi.json      — Aggregator ABI
-  staking-abi.json         — Staking ABI
-  treasury-abi.json        — Treasury ABI
-  engine-abi.json          — Engine ABI
-  match-history-verifier-abi.json — MatchHistoryGroth16Verifier ABI
-  match-verifier-abi.json  — MatchVerifier wrapper ABI
-frontend/                  — Next.js frontend (6 pages)
+  deployments.json              — Contract addresses per network
+  *.json                        — 13 ABI files
+frontend/                       — Next.js frontend (6 pages, demo + live modes)
 ```
 
-## Setup
+---
 
-```bash
-npm install
-cp .env.example .env  # add your PRIVATE_KEY
-npx hardhat compile
-npx hardhat test
-```
+## The Numbers
 
-## Deploy
+| Metric | Count |
+|--------|-------|
+| Smart Contracts | **13** |
+| Tests Passing | **284** |
+| ZK Circuits | **2** (212 total constraints) |
+| Crypto Primitives | **5** |
+| FTSO Feed Integrations | **3** (FLR/USD, BTC/USD, ETH/USD) |
+| Hub Modules | **4** (Vault, Govern, Predict, Arena) |
+| SDK Methods | **14** |
+| Frontend Pages | **6** |
 
-```bash
-# 1. Registry
-npx hardhat run scripts/deploy.ts --network coston2
-npx hardhat run scripts/seed.ts --network coston2
-
-# 2. Attestor
-npx hardhat run scripts/deploy-attestor.ts --network coston2
-npx hardhat run scripts/attest.ts --network coston2
-
-# 3. Hub
-npx hardhat run scripts/deploy-hub.ts --network coston2
-npx hardhat run scripts/seed-hub.ts --network coston2
-
-# 4. Verifier
-npx hardhat run scripts/deploy-verifier.ts --network coston2
-
-# 5. ZK-SNARK Verifier
-npx hardhat run scripts/deploy-zk-verifier.ts --network coston2
-
-# 6. Decay
-npx hardhat run scripts/deploy-decay.ts --network coston2
-
-# 7. Aggregator
-npx hardhat run scripts/deploy-aggregator.ts --network coston2
-npx hardhat run scripts/seed-multi-issuer.ts --network coston2
-
-# 8. Staking
-npx hardhat run scripts/deploy-staking.ts --network coston2
-
-# 9. Treasury
-npx hardhat run scripts/deploy-treasury.ts --network coston2
-
-# 10. Engine
-npx hardhat run scripts/deploy-engine.ts --network coston2
-
-# 11. Match History ZK Verifier
-npx hardhat run scripts/deploy-match-verifier.ts --network coston2
-
-# Generate ZK proofs for demo
-npx hardhat run scripts/generate-zk-proof.ts
-SUBMIT=true npx hardhat run scripts/generate-zk-proof.ts --network coston2
-
-# Generate match history ZK proofs
-npx hardhat run scripts/generate-match-proof.ts
-TOTAL_MATCHES=12 WINS=8 MIN_MATCHES=10 MIN_WIN_RATE=6000 SALT=54321 SUBMIT=true \
-  npx hardhat run scripts/generate-match-proof.ts --network coston2
-```
-
-## Track Justification
-
-### Programmable Cryptography
-
-SkillProof implements 5 cryptographic layers for privacy-preserving skill verification:
-
-1. **Commit-reveal schemes** — Prediction markets and bounty solutions use commit-reveal to prevent front-running and ensure fairness
-2. **Merkle proof verification** — Credential inclusion proofs allow users to prove they hold a valid credential without exposing all credential fields on-chain
-3. **Threshold proofs** — Privacy-preserving ELO gates: prove "my ELO >= 1500" without revealing the exact score via threshold Merkle trees
-4. **ZK-SNARKs (Groth16)** — A real circom2 circuit proves "my ELO >= threshold" without revealing the ELO. Uses commitment scheme (ELO + salt * 2^32), verified on-chain via auto-generated Groth16 Solidity verifier
-5. **Oracle-anchored attestations** — Credentials are timestamped against Flare FTSO price feed state, creating a cryptographic proof that a credential existed at a specific oracle moment
-
-Additional cryptographic primitives:
-- **Replay prevention** — Proof hashes tracked on-chain to prevent double-use
-- **Temporal decay** — Time-weighted credential freshness with configurable decay rate and floor
-- **Cross-issuer aggregation** — Composite scores across multiple credential issuers with cross-domain bonus
-- **Economic security** — Staking/slashing mechanism with game-theoretic incentives for honest issuer behavior
-
-### Flare Network
-
-Three distinct FTSO price feeds are used across two contracts:
-
-| Feed | Contract | Usage |
-|------|----------|-------|
-| FLR/USD | SkillProofAttestor | Anchor credential attestations to FLR price state |
-| FLR/USD | SkillProofHub (Predict) | Prediction market: "Will FLR exceed $1.00?" |
-| BTC/USD | SkillProofHub (Predict) | Prediction market: "Will BTC exceed $100,000?" |
-| ETH/USD | SkillProofHub (Predict) | Prediction market: "Will ETH exceed $4,000?" |
-
-All feeds use Flare FTSOv2 block-latency price oracles via `IFtsoV2` interface at the canonical Coston2 address.
+---
 
 ## Tech Stack
 
-- **Solidity ^0.8.25** — 13 contracts compiled with `viaIR: true` + optimizer
+- **Solidity ^0.8.25** — 13 contracts compiled with `viaIR: true` + optimizer (200 runs)
 - **Hardhat 2.22** — Build, test, deploy
-- **circom2 + snarkjs** — ZK-SNARK circuit compilation and proof generation (Groth16)
-- **Flare FTSO v2** — On-chain price oracle (3 feeds: FLR/USD, BTC/USD, ETH/USD)
+- **circom2 + snarkjs 0.7.6** — ZK-SNARK circuit compilation and Groth16 proof generation
+- **Flare FTSOv2** — Enshrined on-chain price oracle (3 feeds)
 - **Flare Coston2** — Testnet (chain ID 114)
-- **Next.js** — Frontend with dual-mode (demo / live contract)
+- **Next.js 16** — Frontend with dual-mode (demo / live contract)
 - **ethers.js v6** — Contract interaction
 - **TypeScript SDK** — Developer integration library
+
+## Team
+
+- **Leon Wang** — Smart contracts, ZK circuits, protocol architecture, Flare integration, SDK
+- **Arish Choudhary** — Frontend, UI/UX
+
+## License
+
+MIT

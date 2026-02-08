@@ -37,7 +37,7 @@ export default function Home() {
         </h1>
         <p className="text-muted text-sm max-w-lg mb-10 leading-relaxed font-body">
           Soulbound credential protocol with ZK-SNARK proofs,
-          temporal decay, and cross-issuer aggregation. 9 smart contracts on
+          temporal decay, and cross-issuer aggregation. 13 smart contracts on
           Flare Coston2 — Groth16 threshold proofs, Merkle verification,
           skill-gated DeFi, and oracle-resolved prediction markets.
         </p>
@@ -85,15 +85,15 @@ export default function Home() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10 stagger-animate">
           <div className="card text-center hover-scale hover-glow-green cursor-default">
-            <div className="stat-number-green">9</div>
+            <div className="stat-number-green">13</div>
             <span className="text-[10px] text-[#555] uppercase tracking-[0.1em] block mt-2">Smart Contracts</span>
           </div>
           <div className="card text-center hover-scale hover-glow-amber cursor-default">
-            <div className="stat-number-amber">4</div>
+            <div className="stat-number-amber">5</div>
             <span className="text-[10px] text-[#555] uppercase tracking-[0.1em] block mt-2">Crypto Layers</span>
           </div>
           <div className="card text-center hover-scale hover-glow-green cursor-default">
-            <div className="stat-number-green">182+</div>
+            <div className="stat-number-green">284</div>
             <span className="text-[10px] text-[#555] uppercase tracking-[0.1em] block mt-2">Tests Passing</span>
           </div>
           <div className="card text-center hover-scale hover-glow-pink cursor-default">
@@ -103,7 +103,7 @@ export default function Home() {
         </div>
 
         <div className="mt-4 text-xs text-muted leading-relaxed space-y-1 font-body">
-          <p>4 cryptographic layers: commit-reveal, Merkle proofs, threshold proofs, ZK-SNARKs (Groth16)</p>
+          <p>5 cryptographic layers: commit-reveal, Merkle proofs, threshold proofs, ZK-SNARKs (Groth16), oracle-anchored attestations</p>
           <p>Temporal credential decay — credentials lose value if not refreshed, incentivizing freshness</p>
           <p>Cross-issuer skill aggregation — composite scores across multiple credential issuers</p>
         </div>
@@ -112,7 +112,7 @@ export default function Home() {
       {/* Contract info */}
       <section className="py-16 border-t border-[#1a1a1a]">
         <h2 className="text-[11px] uppercase tracking-[0.12em] text-[#555] mb-6">
-          9 Smart Contracts — Live on Coston2
+          13 Smart Contracts — Live on Coston2
         </h2>
         <div className="space-y-2">
           {[
@@ -124,6 +124,11 @@ export default function Home() {
             { label: "ZKVerifier", addr: "0x0F46334167e68C489DE6B65D488F9d64624Bc270", color: "border-amber-500" },
             { label: "Decay", addr: "0x20d0A539e0A49991876CDb2004FeA41AFE1C089E", color: "border-purple-500" },
             { label: "Aggregator", addr: "0x919473044Dde9b3eb69161C4a35eFfb995a234bB", color: "border-cyan-500" },
+            { label: "Staking", addr: "0xc9c6837759c769CCA40661285e5633727A1EbDDD", color: "border-pink" },
+            { label: "Treasury", addr: "0xAd9BBc0294C8710FB96eA1d88b0D760C41074E01", color: "border-pink" },
+            { label: "Engine", addr: "0x936df2cfC13ed7970B5c028a3940e9aB45497376", color: "border-accent" },
+            { label: "MatchGroth16", addr: "0x66904E1933F7d5f57Dc537C6e2F9d585e33bc8A6", color: "border-amber-500" },
+            { label: "MatchVerifier", addr: "0x417dbD1E6D4A35bb09bcC1E1b8DE64F8a2fC70a2", color: "border-amber-500" },
           ].map((c) => (
             <div key={c.label} className={`flex items-center gap-3 border-l-2 ${c.color} pl-4 py-2 bg-[#111] hover:bg-[#161616] transition-colors`}>
               <span className="text-[11px] text-[#666] w-24 uppercase tracking-wide">{c.label}</span>

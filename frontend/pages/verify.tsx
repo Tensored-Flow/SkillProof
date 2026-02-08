@@ -40,6 +40,12 @@ function addrShort(a: string): string {
   return a.slice(0, 10) + "..." + a.slice(-6);
 }
 
+function randomHex(bytes: number): string {
+  return "0x" + Array.from({ length: bytes }, () => Math.floor(Math.random() * 256).toString(16).padStart(2, "0")).join("");
+}
+
+const DEMO_ADDRESS = "0x70997970C51812dc3A010C7d01b50e0d17dc79C8";
+
 export default function VerifyPage() {
   const { demoMode, wallet, setResponseData, showToast } = useApp();
   const service = getService(demoMode);
@@ -65,6 +71,10 @@ export default function VerifyPage() {
   const [zkThreshold, setZkThreshold] = useState<number | null>(null);
   const [zkLoading, setZkLoading] = useState(false);
   const [zkProving, setZkProving] = useState(false);
+  const [merkleProving, setMerkleProving] = useState(false);
+  const [merkleResult, setMerkleResult] = useState<{ verified: boolean; elo: number; threshold: number } | null>(null);
+  const [zkStep, setZkStep] = useState<string | null>(null);
+  const [zkResult, setZkResult] = useState<{ verified: boolean; elo: number; threshold: number; proof: object } | null>(null);
 
   useEffect(() => {
     loadMerkleData();
@@ -120,17 +130,114 @@ export default function VerifyPage() {
     }
   }
 
-  async function handleZKProve() {
-    // Production: proof generation via snarkjs in browser or backend API
-    setZkProving(true);
+  async function handleMerkleProve() {
+    if (!demoMode) {
+      showToast({ type: "warning", message: "Live mode: Merkle threshold proofs require the operator to provide proof paths. Use CLI: npx hardhat run scripts/deploy-verifier.ts" });
+      return;
+    }
+    setMerkleProving(true);
+    setMerkleResult(null);
     try {
-      await new Promise((r) => setTimeout(r, 2000));
-      setZkVerified(true);
-      setZkThreshold(parseInt(zkThresholdInput));
-      setZkVerificationCount((c) => (c ?? 0) + 1);
-      showToast({ type: "success", message: `ZK Verified: ELO \u2265 ${zkThresholdInput}` });
+      const addr = wallet || DEMO_ADDRESS;
+      await new Promise((r) => setTimeout(r, 600));
+      const cred = await service.getCredential(addr);
+      const elo = cred?.scoreCommitment ? parseInt(cred.scoreCommitment, 16) || 1847 : 1847;
+      const threshold = parseInt(thresholdInput) || 1500;
+      await new Promise((r) => setTimeout(r, 900));
+      const verified = elo >= threshold;
+      const proofData = {
+        method: "merkle_threshold",
+        user: addr,
+        elo,
+        threshold,
+        verified,
+        leaf: randomHex(32),
+        proof: [randomHex(32), randomHex(32), randomHex(32)],
+        root: merkleRoot,
+        timestamp: new Date().toISOString(),
+      };
+      setMerkleResult({ verified, elo, threshold });
+      setResponseData(proofData);
+      if (verified) {
+        setThresholdStatus(true);
+        setVerificationCount((c) => (c ?? 0) + 1);
+        showToast({ type: "success", message: `Merkle verified: ELO ${elo} >= ${threshold}` });
+      } else {
+        setThresholdStatus(false);
+        showToast({ type: "error", message: `ELO ${elo} below threshold ${threshold}` });
+      }
+    } catch (e) {
+      showToast({ type: "error", message: (e as Error).message });
+    } finally {
+      setMerkleProving(false);
+    }
+  }
+
+  async function handleZKProve() {
+    if (!demoMode) {
+      showToast({ type: "warning", message: "Live mode: ZK proof generation requires circuit artifacts (WASM + zkey). Use CLI: npx hardhat run scripts/generate-zk-proof.ts" });
+      return;
+    }
+    setZkProving(true);
+    setZkResult(null);
+    try {
+      const addr = wallet || DEMO_ADDRESS;
+
+      setZkStep("Loading credential...");
+      await new Promise((r) => setTimeout(r, 500));
+      const cred = await service.getCredential(addr);
+      const elo = cred?.scoreCommitment ? parseInt(cred.scoreCommitment, 16) || 1847 : 1847;
+      const threshold = parseInt(zkThresholdInput) || 1500;
+
+      setZkStep("Computing witness...");
+      await new Promise((r) => setTimeout(r, 800));
+      const salt = BigInt(randomHex(8));
+      const commitment = BigInt(elo) + salt * BigInt(2 ** 32);
+
+      setZkStep("Generating Groth16 proof...");
+      await new Promise((r) => setTimeout(r, 1200));
+      const proof = {
+        pi_a: [randomHex(32), randomHex(32), "1"],
+        pi_b: [[randomHex(32), randomHex(32)], [randomHex(32), randomHex(32)], ["1", "0"]],
+        pi_c: [randomHex(32), randomHex(32), "1"],
+        protocol: "groth16",
+        curve: "bn128",
+      };
+      const publicSignals = ["1", String(threshold), String(commitment)];
+
+      setZkStep("Verifying on-chain...");
+      await new Promise((r) => setTimeout(r, 500));
+      const verified = elo >= threshold;
+
+      const fullResult = {
+        method: "zk_threshold",
+        user: addr,
+        threshold,
+        verified,
+        proof,
+        publicSignals,
+        commitment: String(commitment),
+        circuit: "threshold_proof.circom",
+        constraints: 36,
+        timestamp: new Date().toISOString(),
+      };
+
+      setZkResult({ verified, elo, threshold, proof: fullResult });
+      setResponseData(fullResult);
+      if (verified) {
+        setZkVerified(true);
+        setZkThreshold(threshold);
+        setZkVerificationCount((c) => (c ?? 0) + 1);
+        showToast({ type: "success", message: `ZK Verified: ELO ${elo} >= ${threshold}` });
+      } else {
+        setZkVerified(false);
+        showToast({ type: "error", message: `ZK proof failed: ELO ${elo} below threshold ${threshold}` });
+      }
+    } catch (e) {
+      showToast({ type: "error", message: (e as Error).message });
     } finally {
       setZkProving(false);
+      setZkStep(null);
     }
   }
 
@@ -330,27 +437,45 @@ export default function VerifyPage() {
             </div>
 
             <button
-              onClick={() => {
-                showToast({
-                  type: "success",
-                  message: `Threshold proof for ELO >= ${thresholdInput} requires Merkle proof from operator.`,
-                });
-              }}
+              onClick={handleMerkleProve}
+              disabled={merkleProving}
               className="btn-primary w-full"
               style={{ borderColor: "#F59E0B", color: "#F59E0B" }}
             >
-              Prove Threshold
+              {merkleProving ? "Proving..." : "Prove Threshold"}
             </button>
 
+            {/* Inline Result */}
+            {merkleResult && (
+              <div className="border-t border-[#1a1a1a] pt-4 space-y-3">
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div>
+                    <div className="text-[9px] text-[#555] uppercase">ELO</div>
+                    <div className="text-sm font-bold text-amber-500">{merkleResult.elo}</div>
+                  </div>
+                  <div>
+                    <div className="text-[9px] text-[#555] uppercase">Threshold</div>
+                    <div className="text-sm font-bold text-[#888]">{merkleResult.threshold}</div>
+                  </div>
+                  <div>
+                    <div className="text-[9px] text-[#555] uppercase">Result</div>
+                    <div className={`text-sm font-bold uppercase ${merkleResult.verified ? "text-accent" : "text-pink"}`}>
+                      {merkleResult.verified ? "Pass" : "Fail"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Status */}
-            <div className="border-t border-[#1a1a1a] pt-4 text-[10px]">
+            <div className={`border-t border-[#1a1a1a] pt-4 text-[10px] ${merkleResult ? "" : ""}`}>
               <span className="text-[#555]">Status: </span>
               {thresholdStatus === true ? (
                 <span className="text-accent font-bold">Verified above threshold</span>
               ) : thresholdStatus === false ? (
-                <span className="text-[#555]">Not yet verified</span>
+                <span className="text-pink font-bold">Below threshold</span>
               ) : (
-                <span className="text-[#555]">Connect wallet to check</span>
+                <span className="text-[#555]">{demoMode ? "Click Prove to verify" : "Connect wallet to check"}</span>
               )}
             </div>
 
@@ -379,7 +504,7 @@ export default function VerifyPage() {
           <div className="card space-y-4 h-full">
             <div className="flex items-center gap-2 text-[10px] text-[#555]">
               <span className="border border-[#2a2a2a] px-2 py-0.5">Groth16</span>
-              <span className="border border-[#2a2a2a] px-2 py-0.5">32 constraints</span>
+              <span className="border border-[#2a2a2a] px-2 py-0.5">36 constraints</span>
             </div>
 
             {/* ZK Verification Count */}
@@ -414,18 +539,40 @@ export default function VerifyPage() {
               disabled={zkProving}
               className="btn-pink w-full"
             >
-              {zkProving ? "Generating..." : "Generate & Verify ZK Proof"}
+              {zkStep || (zkProving ? "Generating..." : "Generate & Verify ZK Proof")}
             </button>
+
+            {/* Inline Result */}
+            {zkResult && (
+              <div className="border-t border-[#1a1a1a] pt-4 space-y-3">
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div>
+                    <div className="text-[9px] text-[#555] uppercase">ELO</div>
+                    <div className="text-sm font-bold text-pink">{zkResult.elo}</div>
+                  </div>
+                  <div>
+                    <div className="text-[9px] text-[#555] uppercase">Threshold</div>
+                    <div className="text-sm font-bold text-[#888]">{zkResult.threshold}</div>
+                  </div>
+                  <div>
+                    <div className="text-[9px] text-[#555] uppercase">Result</div>
+                    <div className={`text-sm font-bold uppercase ${zkResult.verified ? "text-accent" : "text-pink"}`}>
+                      {zkResult.verified ? "Pass" : "Fail"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Status */}
             <div className="border-t border-[#1a1a1a] pt-4 text-[10px]">
               <span className="text-[#555]">Status: </span>
               {zkVerified === true ? (
-                <span className="text-accent font-bold">✅ ZK Verified ≥ {zkThreshold}</span>
+                <span className="text-accent font-bold">ZK Verified {">="} {zkThreshold}</span>
               ) : zkVerified === false ? (
-                <span className="text-[#555]">Not yet verified</span>
+                <span className="text-pink font-bold">Proof failed</span>
               ) : (
-                <span className="text-[#555]">Submit a proof to verify</span>
+                <span className="text-[#555]">{demoMode ? "Click to generate proof" : "Submit a proof to verify"}</span>
               )}
             </div>
 
