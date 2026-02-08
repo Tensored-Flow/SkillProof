@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #0a0a0a;
+  color: #ffffff;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+::selection {
+  background: #00ff88;
+  color: #0a0a0a;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0a0a0a;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-accent text-bg font-bold uppercase tracking-widest px-6 py-3 border-2 border-accent
+           hover:bg-transparent hover:text-accent transition-colors duration-150 text-sm;
+  }
+  .btn-secondary {
+    @apply bg-transparent text-accent font-bold uppercase tracking-widest px-6 py-3 border-2 border-accent
+           hover:bg-accent hover:text-bg transition-colors duration-150 text-sm;
+  }
+  .btn-pink {
+    @apply bg-pink text-white font-bold uppercase tracking-widest px-6 py-3 border-2 border-pink
+           hover:bg-transparent hover:text-pink transition-colors duration-150 text-sm;
+  }
+  .btn-small {
+    @apply text-xs px-3 py-1.5;
+  }
+  .input-field {
+    @apply w-full bg-bg border-2 border-border text-white font-mono text-sm px-4 py-3
+           focus:border-accent focus:outline-none placeholder:text-muted;
+  }
+  .card {
+    @apply bg-surface border-2 border-border p-6;
+  }
+  .label {
+    @apply text-xs uppercase tracking-widest text-muted mb-2 block;
+  }
+  .badge {
+    @apply text-xs uppercase tracking-widest px-2 py-1 border inline-block;
+  }
+  .badge-green {
+    @apply badge border-accent text-accent;
+  }
+  .badge-pink {
+    @apply badge border-pink text-pink;
+  }
+  .badge-muted {
+    @apply badge border-muted text-muted;
+  }
+}
