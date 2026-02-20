@@ -467,11 +467,6 @@ frontend/                       — Next.js frontend (6 pages, demo + live modes
 - **ethers.js v6** — Contract interaction
 - **TypeScript SDK** — Developer integration library
 
-## Team
-
-- **Leon Wang** — Smart contracts, ZK circuits, protocol architecture, Flare integration, SDK
-- **Arish Choudhary** — Frontend, UI/UX
-
 ## License
 
 MIT
